@@ -2,5 +2,6 @@
 #define _RES_RESOURCES_H_
 
 extern const Image alleyBackground;
+extern const Image alleyForeground;
 
 #endif // _RES_RESOURCES_H_
