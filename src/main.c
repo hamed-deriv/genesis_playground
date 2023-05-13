@@ -14,17 +14,21 @@ int scrollSpeedBackground = 1;
 int scrollSpeedForeground = 2;
 
 Sprite *player;
+int playerX = 0;
+int playerY = 75;
 
 void main(void)
 {
   setupBackground();
 
   SPR_init();
-  setupPlayerSprite(WALK_ANIMATION);
+  setupPlayerSprite(playerX, playerY);
 
   while (1)
   {
-    setParallaxBackground(scrollSpeedBackground, scrollSpeedForeground);
+    // setParallaxBackground(scrollSpeedBackground, scrollSpeedForeground);
+
+    handleInput();
 
     SPR_update();
     SYS_doVBlankProcess();
@@ -49,10 +53,44 @@ void setParallaxBackground(int scrollSpeedBackground, int scrollSpeedForeground)
   VDP_setHorizontalScroll(BG_A, horizontalScrollOffsetForeground -= scrollSpeedForeground);
 }
 
-void setupPlayerSprite(int animation)
+void setupPlayerSprite(int x, int y)
 {
   PAL_setPalette(PAL2, alexAnimatedSprite.palette->data, DMA);
-  player = SPR_addSprite(&alexAnimatedSprite, 0, 75, TILE_ATTR(PAL2, FALSE, FALSE, TRUE));
+  player = SPR_addSprite(&alexAnimatedSprite, x, y, TILE_ATTR(PAL2, FALSE, FALSE, TRUE));
+}
 
-  SPR_setAnim(player, animation);
+void handleInput(void)
+{
+  u16 joypadValue = JOY_readJoypad(JOY_1);
+
+  if (joypadValue & BUTTON_LEFT)
+  {
+    playerX--;
+    SPR_setAnim(player, WALK_ANIMATION);
+    SPR_setHFlip(player, FALSE);
+  }
+  else if (joypadValue & BUTTON_RIGHT)
+  {
+    playerX++;
+    SPR_setAnim(player, WALK_ANIMATION);
+    SPR_setHFlip(player, TRUE);
+  }
+
+  if (joypadValue & BUTTON_UP)
+  {
+    playerY--;
+    SPR_setAnim(player, WALK_ANIMATION);
+  }
+  else if (joypadValue & BUTTON_DOWN)
+  {
+    playerY++;
+    SPR_setAnim(player, WALK_ANIMATION);
+  }
+
+  if (!(joypadValue & BUTTON_LEFT) && !(joypadValue & BUTTON_RIGHT) && !(joypadValue & BUTTON_UP) && !(joypadValue & BUTTON_DOWN))
+  {
+    SPR_setAnim(player, IDLE_ANIMATION);
+  }
+
+  SPR_setPosition(player, playerX, playerY);
 }
