@@ -1,6 +1,11 @@
 #include <genesis.h>
 #include <resources.h>
 
+#define NO_ANIMATION 0
+#define IDLE_ANIMATION 1
+#define WALK_ANIMATION 2
+#define UPPERCUT_ANIMATION 3
+
 u16 tileIndex = TILE_USER_INDEX;
 
 int horizontalScrollOffsetBackground = 0;
@@ -15,7 +20,7 @@ void main(void)
   setupBackground();
 
   SPR_init();
-  setupPlayerSprite();
+  setupPlayerSprite(UPPERCUT_ANIMATION);
 
   while (1)
   {
@@ -44,8 +49,10 @@ void setParallaxBackground(int scrollSpeedBackground, int scrollSpeedForeground)
   VDP_setHorizontalScroll(BG_A, horizontalScrollOffsetForeground -= scrollSpeedForeground);
 }
 
-void setupPlayerSprite(void)
+void setupPlayerSprite(int animation)
 {
-  PAL_setPalette(PAL2, sonicSprite.palette->data, DMA);
-  player = SPR_addSprite(&sonicSprite, 0, 0, TILE_ATTR(PAL2, FALSE, FALSE, FALSE));
+  PAL_setPalette(PAL2, alexAnimatedSprite.palette->data, DMA);
+  player = SPR_addSprite(&alexAnimatedSprite, 0, 75, TILE_ATTR(PAL2, FALSE, FALSE, TRUE));
+
+  SPR_setAnim(player, animation);
 }

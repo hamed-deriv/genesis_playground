@@ -6,5 +6,6 @@ extern const Image alleyForeground;
 extern const Image sonicBackground;
 extern const Image sonicForeground;
 extern const SpriteDefinition sonicSprite;
+extern const SpriteDefinition alexAnimatedSprite;
 
 #endif // _RES_RESOURCES_H_
