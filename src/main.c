@@ -1,7 +1,7 @@
 #include <genesis.h>
 #include <resources.h>
 
-#define NO_ANIMATION 0
+#define STILL_ANIMATION 0
 #define IDLE_ANIMATION 1
 #define WALK_ANIMATION 2
 #define UPPERCUT_ANIMATION 3
@@ -20,7 +20,7 @@ void main(void)
   setupBackground();
 
   SPR_init();
-  setupPlayerSprite(UPPERCUT_ANIMATION);
+  setupPlayerSprite(WALK_ANIMATION);
 
   while (1)
   {
