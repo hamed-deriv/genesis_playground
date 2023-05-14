@@ -11,7 +11,7 @@ const int ATTACK_DURATION = 8 * 7;
 void setupBackground(void);
 void setParallaxBackground(int scrollSpeedBackground, int scrollSpeedForeground);
 void setupPlayerSprite(int x, int y);
-void handleInput(void);
+void handleInput(Sprite *player, int *x, int *y, u16 joypadNumber);
 void handleInputEvents(u16 input, u16 changed, u16 state);
 void handleActions(void);
 
@@ -22,9 +22,9 @@ int horizontalScrollOffsetForeground = 0;
 int scrollSpeedBackground = 1;
 int scrollSpeedForeground = 2;
 
-Sprite *player;
-int playerX = 0;
-int playerY = 75;
+Sprite *player1;
+int player1X = 0;
+int player1Y = 75;
 
 int attackTimer = 0;
 
@@ -33,7 +33,7 @@ void main()
   setupBackground();
 
   SPR_init();
-  setupPlayerSprite(playerX, playerY);
+  setupPlayerSprite(player1X, player1Y);
 
   JOY_setEventHandler(handleInputEvents);
 
@@ -69,34 +69,34 @@ void setParallaxBackground(int scrollSpeedBackground, int scrollSpeedForeground)
 void setupPlayerSprite(int x, int y)
 {
   PAL_setPalette(PAL2, alexAnimatedSprite.palette->data, DMA);
-  player = SPR_addSprite(&alexAnimatedSprite, x, y, TILE_ATTR(PAL2, FALSE, FALSE, TRUE));
+  player1 = SPR_addSprite(&alexAnimatedSprite, x, y, TILE_ATTR(PAL2, FALSE, FALSE, TRUE));
 }
 
-void handleInput(void)
+void handleInput(Sprite *player, int *x, int *y, u16 joypadNumber)
 {
-  u16 joypadValue = JOY_readJoypad(JOY_1);
+  u16 joypadValue = JOY_readJoypad(joypadNumber);
 
   if (joypadValue & BUTTON_LEFT)
   {
-    playerX--;
+    (*x)--;
     SPR_setAnim(player, WALK_ANIMATION);
     SPR_setHFlip(player, FALSE);
   }
   else if (joypadValue & BUTTON_RIGHT)
   {
-    playerX++;
+    (*x)++;
     SPR_setAnim(player, WALK_ANIMATION);
     SPR_setHFlip(player, TRUE);
   }
 
   if (joypadValue & BUTTON_UP)
   {
-    playerY--;
+    (*y)--;
     SPR_setAnim(player, WALK_ANIMATION);
   }
   else if (joypadValue & BUTTON_DOWN)
   {
-    playerY++;
+    (*y)++;
     SPR_setAnim(player, WALK_ANIMATION);
   }
 
@@ -105,14 +105,14 @@ void handleInput(void)
     SPR_setAnim(player, IDLE_ANIMATION);
   }
 
-  SPR_setPosition(player, playerX, playerY);
+  SPR_setPosition(player, *x, *y);
 }
 
 void handleInputEvents(u16 input, u16 changed, u16 state)
 {
   if ((changed & state & BUTTON_B) && !attackTimer)
   {
-    SPR_setAnim(player, UPPERCUT_ANIMATION);
+    SPR_setAnim(player1, UPPERCUT_ANIMATION);
 
     attackTimer++;
   }
@@ -122,7 +122,7 @@ void handleActions(void)
 {
   if (!attackTimer)
   {
-    handleInput();
+    handleInput(player1, &player1X, &player1Y, JOY_1);
   }
   else if (attackTimer && attackTimer < ATTACK_DURATION)
   {
