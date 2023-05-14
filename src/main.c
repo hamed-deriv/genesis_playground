@@ -6,6 +6,15 @@
 #define WALK_ANIMATION 2
 #define UPPERCUT_ANIMATION 3
 
+const int ATTACK_DURATION = 8 * 7;
+
+void setupBackground(void);
+void setParallaxBackground(int scrollSpeedBackground, int scrollSpeedForeground);
+void setupPlayerSprite(int x, int y);
+void handleInput(void);
+void handleInputEvents(u16 input, u16 changed, u16 state);
+void handleActions(void);
+
 u16 tileIndex = TILE_USER_INDEX;
 
 int horizontalScrollOffsetBackground = 0;
@@ -17,18 +26,22 @@ Sprite *player;
 int playerX = 0;
 int playerY = 75;
 
-void main(void)
+int attackTimer = 0;
+
+void main()
 {
   setupBackground();
 
   SPR_init();
   setupPlayerSprite(playerX, playerY);
 
+  JOY_setEventHandler(handleInputEvents);
+
   while (1)
   {
     // setParallaxBackground(scrollSpeedBackground, scrollSpeedForeground);
 
-    handleInput();
+    handleActions();
 
     SPR_update();
     SYS_doVBlankProcess();
@@ -93,4 +106,30 @@ void handleInput(void)
   }
 
   SPR_setPosition(player, playerX, playerY);
+}
+
+void handleInputEvents(u16 input, u16 changed, u16 state)
+{
+  if ((changed & state & BUTTON_B) && !attackTimer)
+  {
+    SPR_setAnim(player, UPPERCUT_ANIMATION);
+
+    attackTimer++;
+  }
+}
+
+void handleActions(void)
+{
+  if (!attackTimer)
+  {
+    handleInput();
+  }
+  else if (attackTimer && attackTimer < ATTACK_DURATION)
+  {
+    attackTimer++;
+  }
+  else if (attackTimer == ATTACK_DURATION)
+  {
+    attackTimer = 0;
+  }
 }
